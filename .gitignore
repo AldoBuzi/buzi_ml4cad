@@ -2,3 +2,4 @@ __pycache__/
 /.ipynb_checkpoints/*
 py385_environment.yml
 ml4cad
+.DS_Store
