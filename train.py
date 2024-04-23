@@ -43,9 +43,9 @@ def train_and_evaluate(
     scoring="f1_macro", 
     iter=5000, 
     save=True, 
-    savename=""
+    savename="",
+    path_models ="",
 ):
-    path_models = "models/"
     suffix = ""
     """Train and evaluation pipeline."""
     pipe = Pipeline(steps=[
