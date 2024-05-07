@@ -1,0 +1,301 @@
+########### LOGISTIC REGRESSION #############
+
+Testing on training set:
+              precision    recall  f1-score   support
+
+         0.0      0.520     0.414     0.461       505
+         1.0      0.918     0.945     0.931      3494
+
+    accuracy                          0.878      3999
+   macro avg      0.719     0.679     0.696      3999
+weighted avg      0.867     0.878     0.872      3999
+
+auc macro 0.838
+confusion matrix
+[[ 209  296]
+ [ 193 3301]]
+Testing on validation set:
+              precision    recall  f1-score   support
+
+         0.0      0.507     0.438     0.470       169
+         1.0      0.920     0.938     0.929      1165
+
+    accuracy                          0.875      1334
+   macro avg      0.713     0.688     0.699      1334
+weighted avg      0.868     0.875     0.871      1334
+
+auc macro 0.826
+confusion matrix
+[[  74   95]
+ [  72 1093]]
+Model rank: 1
+Mean validation score: 0.703 (std: 0.000)
+Parameters: {'model__C': 9, 'model__dual': True, 'model__max_iter': 157, 'model__penalty': 'l2', 'model__solver': 'liblinear', 'model__warm_start': True}
+
+
+########### LOGISTIC REGRESSION END #############
+
+########### SVC #############
+
+Testing on training set:
+              precision    recall  f1-score   support
+
+         0.0      0.214     0.483     0.296       505
+         1.0      0.909     0.743     0.818      3494
+
+    accuracy                          0.710      3999
+   macro avg      0.561     0.613     0.557      3999
+weighted avg      0.821     0.710     0.752      3999
+
+auc macro 0.701
+confusion matrix
+[[ 244  261]
+ [ 898 2596]]
+Testing on validation set:
+              precision    recall  f1-score   support
+
+         0.0      0.175     0.402     0.244       169
+         1.0      0.893     0.725     0.801      1165
+
+    accuracy                          0.684      1334
+   macro avg      0.534     0.564     0.522      1334
+weighted avg      0.802     0.684     0.730      1334
+
+auc macro 0.642
+confusion matrix
+[[ 68 101]
+ [320 845]]
+Model rank: 1
+Mean validation score: 0.665 (std: 0.011)
+Parameters: {'model__C': 102, 'model__coef0': 0.7438620447180111, 'model__degree': 105, 'model__gamma': 'scale', 'model__kernel': 'rbf', 'model__max_iter': 1600}
+
+########### SVC END #############
+
+########### KNeighborsClassifier #############
+
+Fitting 2 folds for each of 5000 candidates, totalling 10000 fits
+Testing on training set:
+              precision    recall  f1-score   support
+
+         0.0      0.673     0.566     0.615       505
+         1.0      0.939     0.960     0.949      3494
+
+    accuracy                          0.910      3999
+   macro avg      0.806     0.763     0.782      3999
+weighted avg      0.905     0.910     0.907      3999
+
+auc macro 0.943
+confusion matrix
+[[ 286  219]
+ [ 139 3355]]
+Testing on validation set:
+              precision    recall  f1-score   support
+
+         0.0      0.378     0.331     0.353       169
+         1.0      0.905     0.921     0.913      1165
+
+    accuracy                          0.846      1334
+   macro avg      0.642     0.626     0.633      1334
+weighted avg      0.838     0.846     0.842      1334
+
+auc macro 0.699
+confusion matrix
+[[  56  113]
+ [  92 1073]]
+Model rank: 1
+Mean validation score: 0.644 (std: 0.016)
+Parameters: {'model__algorithm': 'ball_tree', 'model__leaf_size': 11, 'model__n_neighbors': 4, 'model__weights': 'uniform'}
+
+########### KNeighborsClassifier END #############
+
+########### RANDOM FOREST #############
+
+Fitting 2 folds for each of 5000 candidates, totalling 10000 fits
+Testing on training set:
+              precision    recall  f1-score   support
+
+         0.0      0.782     0.947     0.857       505
+         1.0      0.992     0.962     0.977      3494
+
+    accuracy                          0.960      3999
+   macro avg      0.887     0.954     0.917      3999
+weighted avg      0.966     0.960     0.962      3999
+
+auc macro 0.990
+confusion matrix
+[[ 478   27]
+ [ 133 3361]]
+Testing on validation set:
+              precision    recall  f1-score   support
+
+         0.0      0.425     0.450     0.437       169
+         1.0      0.919     0.912     0.916      1165
+
+    accuracy                          0.853      1334
+   macro avg      0.672     0.681     0.676      1334
+weighted avg      0.857     0.853     0.855      1334
+
+auc macro 0.821
+confusion matrix
+[[  76   93]
+ [ 103 1062]]
+Model rank: 1
+Mean validation score: 0.699 (std: 0.004)
+Parameters: {'model__class_weight': 'balanced', 'model__criterion': 'gini', 'model__max_features': 'log2', 'model__min_samples_leaf': 4, 'model__min_samples_split': 4, 'model__n_estimators': 111}
+
+
+########### RANDOM FOREST END #############
+
+########### ADABOOST  #############
+
+Fitting 2 folds for each of 5000 candidates, totalling 10000 fits
+Testing on training set:
+              precision    recall  f1-score   support
+
+         0.0      0.639     0.295     0.404       505
+         1.0      0.905     0.976     0.939      3494
+
+    accuracy                          0.890      3999
+   macro avg      0.772     0.636     0.672      3999
+weighted avg      0.872     0.890     0.872      3999
+
+auc macro 0.863
+confusion matrix
+[[ 149  356]
+ [  84 3410]]
+Testing on validation set:
+              precision    recall  f1-score   support
+
+         0.0      0.591     0.308     0.405       169
+         1.0      0.906     0.969     0.937      1165
+
+    accuracy                          0.885      1334
+   macro avg      0.749     0.638     0.671      1334
+weighted avg      0.866     0.885     0.869      1334
+
+auc macro 0.823
+confusion matrix
+[[  52  117]
+ [  36 1129]]
+Model rank: 1
+Mean validation score: 0.676 (std: 0.005)
+Parameters: {'model__learning_rate': 0.8039516858638249, 'model__n_estimators': 44}
+
+
+########### ADABOOST END  #############
+
+########### MLP  #############
+
+Fitting 2 folds for each of 5000 candidates, totalling 10000 fits
+Testing on training set:
+              precision    recall  f1-score   support
+
+         0.0      0.602     0.291     0.393       505
+         1.0      0.905     0.972     0.937      3494
+
+    accuracy                          0.886      3999
+   macro avg      0.754     0.632     0.665      3999
+weighted avg      0.866     0.886     0.868      3999
+
+auc macro 0.835
+confusion matrix
+[[ 147  358]
+ [  97 3397]]
+Testing on validation set:
+              precision    recall  f1-score   support
+
+         0.0      0.588     0.278     0.378       169
+         1.0      0.903     0.972     0.936      1165
+
+    accuracy                          0.884      1334
+   macro avg      0.745     0.625     0.657      1334
+weighted avg      0.863     0.884     0.865      1334
+
+auc macro 0.818
+confusion matrix
+[[  47  122]
+ [  33 1132]]
+Model rank: 1
+Mean validation score: 0.696 (std: 0.009)
+Parameters: {'model__alpha': 0.04393071215535704, 'model__early_stopping': True, 'model__hidden_layer_sizes': [155, 75], 'model__learning_rate': 'adaptive', 'model__learning_rate_init': 0.005343762578095483, 'model__max_iter': 474, 'model__solver': 'adam'}
+
+
+########### MLP END  #############
+
+########### GRADIENT BOOSTING #############
+
+
+Fitting 2 folds for each of 5000 candidates, totalling 10000 fits
+Testing on training set:
+              precision    recall  f1-score   support
+
+         0.0      0.906     0.479     0.627       505
+         1.0      0.930     0.993     0.960      3494
+
+    accuracy                          0.928      3999
+   macro avg      0.918     0.736     0.794      3999
+weighted avg      0.927     0.928     0.918      3999
+
+auc macro 0.925
+confusion matrix
+[[ 242  263]
+ [  25 3469]]
+Testing on validation set:
+              precision    recall  f1-score   support
+
+         0.0      0.520     0.314     0.391       169
+         1.0      0.906     0.958     0.931      1165
+
+    accuracy                          0.876      1334
+   macro avg      0.713     0.636     0.661      1334
+weighted avg      0.857     0.876     0.863      1334
+
+auc macro 0.818
+confusion matrix
+[[  53  116]
+ [  49 1116]]
+Model rank: 1
+Mean validation score: 0.677 (std: 0.002)
+Parameters: {'model__learning_rate': 0.20209910770325035, 'model__max_depth': 4, 'model__max_features': 'log2', 'model__n_estimators': 62, 'model__subsample': 0.75}
+
+
+########### GRADIENT BOOSTING END #############
+
+########### XGB #############
+
+
+Fitting 2 folds for each of 5000 candidates, totalling 10000 fits
+Testing on training set:
+              precision    recall  f1-score   support
+
+         0.0      0.570     0.503     0.534       505
+         1.0      0.929     0.945     0.937      3494
+
+    accuracy                          0.889      3999
+   macro avg      0.749     0.724     0.736      3999
+weighted avg      0.884     0.889     0.886      3999
+
+auc macro 0.870
+confusion matrix
+[[ 254  251]
+ [ 192 3302]]
+Testing on validation set:
+              precision    recall  f1-score   support
+
+         0.0      0.440     0.414     0.427       169
+         1.0      0.916     0.924     0.920      1165
+
+    accuracy                          0.859      1334
+   macro avg      0.678     0.669     0.673      1334
+weighted avg      0.856     0.859     0.857      1334
+
+auc macro 0.823
+confusion matrix
+[[  70   99]
+ [  89 1076]]
+Model rank: 1
+Mean validation score: 0.702 (std: 0.001)
+Parameters: {'model__alpha': 0.24906550672293198, 'model__booster': 'dart', 'model__eta': 0.11539503485302306, 'model__gamma': 0.19606960044441699, 'model__lambda': 1.947340594211887, 'model__max_depth': 3, 'model__n_estimators': 28, 'model__scale_pos_weight': 0.4, 'model__subsample': 1}
+
+
+########### XGB END #############
