@@ -1,0 +1,10 @@
+##############################################
+ Rank: #1 Names: ('gb_random_svmsmote_gb', 'rf_random_smote_rf', 'lr_random_svmsmote_lr', 'svc_random_bordersmote_svc'), Score: (0.7365670315158596, 0.9311531841652322, 0.1199400299850075)
+##############################################
+ Rank: #2 Names: ('gb_random_svmsmote_gb', 'rf_random_smote_rf', 'adaboost_random_svmsmote_adaboost'), Score: (0.7260202656373009, 0.9309309309309309, 0.1206896551724138)
+##############################################
+ Rank: #3 Names: ('gb_random_svmsmote_gb', 'rf_random_smote_rf', 'svc_random_bordersmote_svc'), Score: (0.7336084516342026, 0.930752688172043, 0.1206896551724138)
+##############################################
+ Rank: #4 Names: ('gb_random_svmsmote_gb', 'rf_random_smote_rf', 'adaboost_random_svmsmote_adaboost', 'svc_random_bordersmote_svc'), Score: (0.7336084516342026, 0.930752688172043, 0.1206896551724138)
+##############################################
+ Rank: #5 Names: ('gb_random_svmsmote_gb', 'knn_random_svmsmote_knn', 'rf_random_smote_rf', 'lr_random_svmsmote_lr', 'svc_random_bordersmote_svc'), Score: (0.7281204764202454, 0.9304123711340206, 0.12143928035982009)

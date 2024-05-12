@@ -1,7 +1,6 @@
-import copy
 import numpy as np
-from joblib import dump, load
-from sklearn.metrics import classification_report, f1_score, fbeta_score, make_scorer, accuracy_score, confusion_matrix, plot_confusion_matrix, roc_auc_score, brier_score_loss
+from joblib import load
+from sklearn.metrics import classification_report, f1_score, confusion_matrix, roc_auc_score, brier_score_loss
 
 
 from itertools import chain, repeat, count, islice
@@ -21,7 +20,6 @@ def predict_ensemble(ensemble, X, y, threshold=0.5):
         y_proba.append(m.predict_proba(X))
     y_proba = np.mean(y_proba, axis=0)
     y_pred = y_proba[:, 1] > threshold
-    
     return y_proba, y_pred
 
 
@@ -33,32 +31,11 @@ def evaluate_ensemble(ensemble, X, y, threshold=0.5, verbose=True):
         print(f"brier {brier_score_loss(y, y_proba[:, 1]):.3f}")
         print(confusion_matrix(y, y_pred))
   
-    return (roc_auc_score(y, y_proba[:, 1]),f1_score(y, y_pred))
+    return (roc_auc_score(y, y_pred),f1_score(y, y_pred), brier_score_loss(y,y_pred))
 
 
-def find_best_ensemble(ensemble, X_valid, y_valid):
-    results = []
-    sum = 0
-    while len(ensemble) > 1:
-        tmp_res = []
-        for m in ensemble:
-            tmp = copy.copy(ensemble)
-            tmp.remove(m)
-            sum += 1
-            names = [_name for _name, _m in tmp]
-            tmp = [_m for _name, _m in tmp]
-            acc = evaluate_ensemble(tmp, X_valid, y_valid, verbose=False)
-            results.append((names, tmp, acc))
-            tmp_res.append((m, acc))
 
-        m, _ = max(tmp_res, key=lambda item:item[1])
-        ensemble.remove(m)
-        print(f"Somma totale {sum}")
-        print(m)
-        
-    return max(results, key=lambda item:item[2])
-
-def find_best_ensemble2(models_list, path, X_valid, y_valid, verbose = False):
+def find_best_ensemble(models_list, path, X_valid, y_valid, verbose = False):
     results = []
     for key in range(1,len(models_list)):
         combinations = list(unique_combinations(models_list,key))
@@ -67,15 +44,15 @@ def find_best_ensemble2(models_list, path, X_valid, y_valid, verbose = False):
             tmp = [_m for _, _m in ensemble]
             acc = evaluate_ensemble(tmp, X_valid, y_valid, verbose= verbose)
             results.append((combine, tmp, acc))
-    results.sort(key=lambda item:-item[2][1])
+    results.sort(key=lambda item:item[2][2])
     results = results[:5]
     copy = results.copy()
     filter = [(x[0],x[2]) for x in results]
-    copy.sort(key=lambda item:-item[2][0])
+    copy.sort(key=lambda item:-item[2][1])
     for names, model, score  in copy[:5]:
         if (names, score) not in filter:
             results.append((names,model,score))
-    results.sort(key=lambda item:-item[2][1])
+    results.sort(key=lambda item:item[2][2])
     index = 1
     for ensemble in results[:10]:
         names, model, score = ensemble

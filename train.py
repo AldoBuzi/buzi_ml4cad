@@ -1,7 +1,8 @@
 import numpy as np
-from sklearn.metrics import classification_report, f1_score, fbeta_score, make_scorer, accuracy_score, confusion_matrix, plot_confusion_matrix, roc_auc_score
+from sklearn.metrics import classification_report, confusion_matrix, plot_confusion_matrix, roc_auc_score
+from contextlib import redirect_stdout
 from sklearn.pipeline import Pipeline
-from sklearn.model_selection import GridSearchCV, RandomizedSearchCV, learning_curve, validation_curve
+from sklearn.model_selection import RandomizedSearchCV
 import joblib
 
 def report(results, n_top=3):
@@ -45,8 +46,50 @@ def train_and_evaluate(
     save=True, 
     savename="",
     path_models ="",
-):
+    output_models = "",
     suffix = ""
+):
+    rand = train(
+        preprocess=preprocess,
+        model=model,
+        hyperparams=hyperparams,
+        X_train=X_train,
+        y_train=y_train,
+        scoring=scoring,
+        iter=iter
+    )
+    
+    print("Testing on training set:")
+    evaluate(rand.best_estimator_, X_train, y_train)
+    print("Testing on validation set:")
+    evaluate(rand.best_estimator_, X_valid, y_valid)
+    report(rand.cv_results_, n_top=5)
+    file_name = output_models.replace("models_output/", '').replace("/","") + suffix + ".txt"
+
+    if save:
+         # Dump results as log
+        with open(f"{output_models}{file_name}", 'a+') as f:
+            with redirect_stdout(f):
+                print (f"####################   {savename}    #########################")
+                print("Testing on training set:")
+                evaluate(rand.best_estimator_, X_train, y_train)
+                print("Testing on validation set:")
+                evaluate(rand.best_estimator_, X_valid, y_valid)
+                report(rand.cv_results_, n_top=1)
+                print (f"####################   {savename}  END   #########################")
+        joblib.dump(rand.best_estimator_, f"{path_models}{savename}.joblib")
+    
+    return rand.best_estimator_
+
+def train(
+    preprocess, 
+    model, 
+    hyperparams, 
+    X_train, 
+    y_train, 
+    scoring="f1_macro", 
+    iter=5000,
+):
     """Train and evaluation pipeline."""
     pipe = Pipeline(steps=[
         ('preprocess', preprocess), 
@@ -63,13 +106,4 @@ def train_and_evaluate(
                               return_train_score=True,
                               verbose=True).fit(X_train, y_train)
     
-    print("Testing on training set:")
-    evaluate(rand.best_estimator_, X_train, y_train)
-    print("Testing on validation set:")
-    evaluate(rand.best_estimator_, X_valid, y_valid)
-    report(rand.cv_results_, n_top=5)
-
-    if save:
-        joblib.dump(rand.best_estimator_, f"{path_models}{savename}{suffix}.joblib")
-    
-    return rand.best_estimator_
+    return rand
