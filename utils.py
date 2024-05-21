@@ -3,6 +3,8 @@ from sklearn.preprocessing import StandardScaler
 from imblearn.under_sampling import RandomUnderSampler
 from sklearn.metrics import f1_score
 import numpy as np
+from sklearn.pipeline import Pipeline
+
 def get_preprocess_std_num(feat_names):
     """Preprocess only the numerical features."""
 
@@ -45,3 +47,22 @@ def datasetSampler(
         scores.append(score)
     score = np.mean(scores)
     return (score,X_train_sample,y_train_sample, model)
+
+
+class DebuggablePipeLine(Pipeline):
+    def predict_proba(self, X, **predict_proba_params):
+        # Uncomment these comments if you want to see if your ColumnTransformer is being applied correctly
+        #Xt = X
+        # This code is from the source code of Sklearn's Pipeline
+        # If your data is transformed correctly there, it'll be also transformed correctly in the super class method.
+        """for _, name, transform in self._iter(with_final=False):
+                Xt = transform.transform(Xt)
+        print(Xt)"""
+        return super().predict_proba(X, **predict_proba_params)
+    
+    @classmethod
+    def cast(cls, to_be_casted_obj):
+        casted_obj = cls(to_be_casted_obj.steps)
+        casted_obj.__dict__ = to_be_casted_obj.__dict__
+        return casted_obj
+

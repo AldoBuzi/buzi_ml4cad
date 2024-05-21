@@ -104,6 +104,6 @@ def train(
                               n_jobs=-1,    # use all processors
                               refit=True,   # refit the best model at the end
                               return_train_score=True,
-                              verbose=True).fit(X_train, y_train)
+                              verbose=0).fit(X_train, y_train)
     
     return rand

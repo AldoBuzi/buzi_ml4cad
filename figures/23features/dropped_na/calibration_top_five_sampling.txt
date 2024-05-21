@@ -1,10 +1,10 @@
 ##############################################
- Rank: #1 Names: ('rf_random_smote_rf', 'adaboost_random_smote_adaboost'), Score: (0.6904289740110636, 0.9333333333333335, 0.11851851851851852)
+ Rank: #1 Names: ['gb_random_svmsmote_gb', 'rf_random_smote_rf', 'lr_random_svmsmote_lr'], Score: (0.8286908986535853, 0.6177987920554415, 0.08205356999151159)
 ##############################################
- Rank: #2 Names: ('rf_random_smote_rf',), Score: (0.6899625561006157, 0.9328392774432608, 0.11934156378600823)
+ Rank: #2 Names: ['rf_random_smote_rf', 'xgb_random_svmsmote_xgb', 'lr_random_svmsmote_lr'], Score: (0.8317829558501201, 0.6157495256166983, 0.08206655885506332)
 ##############################################
- Rank: #3 Names: ('gb_random_svmsmote_gb', 'rf_random_smote_rf', 'adaboost_random_smote_adaboost'), Score: (0.7058109800647114, 0.9299719887955181, 0.12345679012345678)
+ Rank: #3 Names: ['gb_random_svmsmote_gb', 'rf_random_smote_rf', 'xgb_random_svmsmote_xgb', 'lr_random_svmsmote_lr'], Score: (0.8299303308631667, 0.6226208391019081, 0.08206696784142446)
 ##############################################
- Rank: #4 Names: ('gb_random_svmsmote_gb', 'rf_random_smote_rf'), Score: (0.7053445621542636, 0.9294722092480149, 0.1242798353909465)
+ Rank: #4 Names: ['rf_random_smote_rf', 'lr_random_svmsmote_lr'], Score: (0.8310784364888842, 0.6147372336037726, 0.08214630762322855)
 ##############################################
- Rank: #5 Names: ('adaboost_random_smote_adaboost',), Score: (0.6918249660786975, 0.9282385834109972, 0.12674897119341563)
+ Rank: #5 Names: ['gb_random_svmsmote_gb', 'rf_random_smote_rf'], Score: (0.8232439202588456, 0.6205306586623625, 0.08231310279626564)
