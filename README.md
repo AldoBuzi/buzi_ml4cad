@@ -1,69 +1,87 @@
-# ML4CAD — Machine Learning for Coronary Artery Disease Prediction
+# Comparative Study of Machine Learning Indicators for Cardiac Mortality Prediction in Ischemic Heart Disease Patients
 
-**Author:** [Aldo Buzi](https://github.com/AldoBuzi)
+> Bachelor's thesis — **University of Pisa, Department of Computer Science**
+>
+> **Author:** Donaldo (Aldo) Buzi
+>
+> **Advisors:** Prof. Giuseppe Prencipe, Prof.ssa Alina Sîrbu
+>
+> **Academic Year:** 2023/2024
 
-A comprehensive machine learning pipeline for predicting **7-year mortality** in patients with Coronary Artery Disease (CAD), using clinical, biochemical, and thyroid-function data. The project explores:
+A comparative machine learning study for predicting **7-year cardiovascular mortality** in patients with **Ischemic Heart Disease (IHD)**. The work compares two risk indicators:
 
-- Multiple feature subsets (18 / 23 / 27 / 32 features)
-- 7 classifiers + hyperparameter tuning via `RandomizedSearchCV`
-- Oversampling strategies (SMOTE, Borderline-SMOTE, SVM-SMOTE) to handle class imbalance
-- Ensemble learning (best combinations of 2+ models)
-- Feature clustering and ablation studies
-- Kaplan–Meier survival analysis for risk stratification
+- **17-parameter indicator** — based purely on cardiovascular features (adapted from [2])
+- **26-parameter indicator** — extends the above with thyroid function parameters
+
+An **ensemble model** is built by combining the best classifiers. The study also includes **Kaplan-Meier survival analysis** and **Cox regression** for variable importance assessment.
 
 ---
 
 ## Table of Contents
 
-- [Project Overview](#project-overview)
-- [Dataset & Feature Subsets](#dataset--feature-subsets)
+- [Abstract](#abstract)
+- [Contributions](#contributions)
+- [Dataset & Feature Sets](#dataset--feature-sets)
 - [Pipeline](#pipeline)
-  - [1. Data Processing](#1-data-processing)
-  - [2. Classification](#2-classification)
-  - [3. Sampling & Imbalance Handling](#3-sampling--imbalance-handling)
-  - [4. Ensemble Search](#4-ensemble-search)
-  - [5. Feature Clustering & Ablation](#5-feature-clustering--ablation)
-  - [6. Survival Analysis](#6-survival-analysis)
-- [Models Used](#models-used)
+- [Models](#models)
 - [Project Structure](#project-structure)
 - [How to Run](#how-to-run)
 - [Results Summary](#results-summary)
+- [References](#references)
 
 ---
 
-## Project Overview
+## Abstract
 
-**Goal:** Predict whether a CAD patient will die from cardiovascular causes within 7 years of a clinical visit (target: `Survive7Y`).
+Cardiovascular diseases, particularly Ischemic Heart Disease (IHD), remain a leading cause of death worldwide. This study evaluates the ability of machine learning to identify high-risk IHD patients and compares two risk indicators:
 
-**Key challenge:** Severe class imbalance — only ≈13% of patients experience the event.
+1. A **purely cardiovascular indicator** based on 17 clinical parameters
+2. A **thyroid-enhanced indicator** that adds thyroid function parameters (26 total)
 
-**Approach:** A multi-stage pipeline that:
-1. Cleans and filters raw clinical data
-2. Trains and tunes multiple classifiers on different feature subsets
-3. Applies oversampling to handle imbalance
-4. Searches for optimal ensemble combinations
-5. Validates via feature ablation and survival curve analysis
+The goal is to determine whether thyroid data improves prediction accuracy. The best-performing models are combined into an ensemble, and survival analysis validates the clinical stratification.
 
 ---
 
-## Dataset & Feature Subsets
+## Contributions
 
-Data comes from **three raw sources**:
+- **Data processing** — cleaning, filtering CVD deaths, handling missing values
+- **ML pipeline** — training and evaluating 8 classifiers across multiple feature sets
+- **Ensemble construction** — exhaustive search over all model combinations to find the best ensemble by Brier score and macro F1
+- **Ablation tests** — univariate and multivariate feature importance via a custom *importance* metric
+- **Survival analysis** — Kaplan-Meier estimation and Cox Proportional Hazards model for risk stratification and variable analysis
+
+---
+
+## Dataset & Feature Sets
+
+Three raw data sources are used:
 - `raw_data.xlsx` — main clinical dataset
 - `data_prelievo.xlsx` — blood draw dates
 - `creatina_more_columns.xlsx` — additional creatinine measurements
 
-After cleaning (removing non-CVD deaths, irrelevant features), four feature subsets are created:
+After filtering out non-CVD deaths and irrelevant features, four feature sets are derived.
 
-| Subset | # Features | Description |
-|--------|-----------|-------------|
-| **18 features** | 18 | Core clinical features (age, vessels, history, etc.) — **excludes** both lipid panel and thyroid panel |
-| **23 features** | 23 | 18 features + **creatinine & lipid panel** (Total cholesterol, HDL, LDL, Triglycerides, Creatinine) |
-| **27 features** | 27 | 18 features + **thyroid panel** (TSH, fT3, fT4, Euthyroid, SCH, SCT, Low T3, Hypothyroidism, Hyperthyroidism) |
-| **32 features** | 32 | All available features (18 + lipids + thyroid) |
+### Main indicators (thesis focus)
 
-**Missing data handling:**
-- For 23- and 32-feature sets: **mean imputation** vs. **dropping NAs** — both strategies are tested separately.
+| Indicator | Parameters | Features (incl. target) | Description |
+|-----------|-----------|------------------------|-------------|
+| **Cardiovascular** | 17 | 18 (17 + `Survive7Y`) | Original cardiovascular parameters from [2], minus creatinine (removed due to missing values) |
+| **Thyroid-enhanced** | 26 | 27 (26 + `Survive7Y`) | Cardiovascular + thyroid panel (TSH, fT3, fT4, Euthyroid, SCH, SCT, Low T3, Hypothyroidism, Hyperthyroidism) |
+
+### Secondary variants (exploratory)
+
+| Variant | Features (incl. target) | Description |
+|---------|------------------------|-------------|
+| **22-parameter** | 23 | Cardiovascular + creatinine & lipid panel (Total cholesterol, HDL, LDL, Triglycerides, Creatinine). Excludes thyroid. |
+| **31-parameter** | 32 | All available features (cardiovascular + lipids + thyroid). |
+
+> **Note on nomenclature:** The code and directories use the full feature count including the target (18, 23, 27, 32 features). The thesis refers to the parameter count excluding the target (17, 22, 26, 31 parameters).
+
+### Missing data handling
+
+For the 23- and 32-feature sets (which contain creatinine and lipid columns with missing values), two strategies are tested separately:
+- **Mean imputation**
+- **Drop rows with NAs**
 
 ---
 
@@ -72,95 +90,79 @@ After cleaning (removing non-CVD deaths, irrelevant features), four feature subs
 ### 1. Data Processing
 **Notebook:** `1_data_process.ipynb`
 
-- Loads raw Excel files (`raw_data.xlsx`, `data_prelievo.xlsx`, `creatina_more_columns.xlsx`)
-- Filters to **CVD death patients only** (removes non-CVD deaths)
-- Removes irrelevant features, creates target `Survive7Y`
-- Splits data into **feature subsets** (18, 23, 27, 32 features)
-- Saves train/validation/test splits for each subset
+- Loads raw Excel files, converts dates
+- Removes non-CVD death patients
+- Removes irrelevant features, creates `Survive7Y` target
+- Splits into train/validation/test for each feature set
 
-### 2. Classification
+### 2. Training
 **Notebook:** `2_classifiers.ipynb`  
 **Module:** `train.py`
 
-For each feature subset:
-- Builds a `sklearn` `Pipeline` with:
-  - `ColumnTransformer` + `StandardScaler` for numerical features
-  - The chosen classification model
-- Runs **`RandomizedSearchCV`** (2-fold CV, 5000 iterations) over a wide hyperparameter space
-- Evaluates on **validation set** (classification report, AUROC, confusion matrix)
-- Saves the best model as a `.joblib` file
+Each classifier is trained via a `Pipeline` (`StandardScaler` → model) with `RandomizedSearchCV` (2-fold CV, 5000 iterations). Hyperparameter spaces are defined in `hyperparameters.py` using SciPy statistical distributions for continuous parameters.
 
-**Hyperparameter search spaces** are defined in `hyperparameters.py` using SciPy distributions for continuous parameters.
-
-### 3. Sampling & Imbalance Handling
+### 3. Data Sampling
 **Notebook:** `3.1_data_sampling.ipynb`
 
-Applies **oversampling** to the training set before re-training all classifiers:
+To address severe class imbalance (~13% events), three oversampling techniques are applied:
 
-| Oversampler | Description |
-|-------------|-------------|
-| **SMOTE** | Standard Synthetic Minority Oversampling Technique |
-| **Borderline-SMOTE** | SMOTE focused on borderline minority samples |
-| **SVM-SMOTE** | SMOTE using SVM to identify borderline region |
+| Oversampler | Strategy |
+|-------------|----------|
+| **SMOTE** | Standard synthetic minority oversampling |
+| **Borderline-SMOTE** | Focuses on borderline minority samples |
+| **SVM-SMOTE** | Uses SVM to identify the borderline region |
 
-Each classifier is trained 5 times with different resampled data, and the **mean macro F1** is logged. Results are saved as:
-- `*_sampling.txt` — full results with oversampling
-- `*_only_oversampling.txt` — oversampling only (no undersampling)
-- Best models saved as `*_random_smote_*.joblib`, `*_random_bordersmote_*.joblib`, `*_random_svmsmote_*.joblib`
+Each resampled model is trained 5 times and the mean macro F1 is logged.
 
-### 4. Ensemble Search
-**Notebook:** `3.2_find_best_ensemble.ipynb` / `3_ensemble_ablations.ipynb`  
+### 4. Calibration
+**Notebook:** `3_ensemble_ablations.ipynb`
+
+Top models are calibrated via `CalibratedClassifierCV`. Calibration curves are plotted for the best ensembles.
+
+### 5. Ensemble Search
+**Notebook:** `3.2_find_best_ensemble.ipynb`  
 **Module:** `ensemble.py`
 
-After individual models are trained on resampled data, the best ones are combined into **ensembles**:
+All unique combinations of 2+ models are evaluated:
+- Predictions are averaged (simple mean of probabilities)
+- Ranked by **Brier score** (calibration quality) and **macro F1**
+- The top 5–10 ensembles are saved and analyzed
 
-1. Generates all **unique combinations** of 2+ models without duplicates
-2. For each combination, predicts via **simple averaging** of probabilities
-3. Evaluates on: **AUROC**, **macro F1**, **Brier score**
-4. Ranks the top 5–10 ensembles by **Brier score** (calibration quality) and macro F1
-5. Produces **calibration plots** for the best ensembles
-
-This approach finds that ensembles of 3–4 diverse models consistently outperform single classifiers.
-
-### 5. Feature Clustering & Ablation
+### 6. Feature Clustering & Ablation
 **Notebook:** `4_feature_cluster.ipynb`
 
-To understand feature importance:
-- Computes **correlation matrix** (Pearson) among features
-- Applies **hierarchical clustering** to group correlated features
-- Performs **univariate and multivariate ablation**: removes feature clusters and measures performance drop
+- Computes Spearman correlation matrix
+- Hierarchical clustering of correlated features
+- Univariate and multivariate ablation tests using a custom *importance* metric
 - Identifies the most predictive feature groups
 
-Output files:
-- `feat_cluster_hier.df` — cluster assignments
-- `cluster.tiff` — cluster visualization
-- `extra_ablation_uni_test.csv` — univariate ablation results
-- `multivariate_ablation_hier_nomeds.csv` — multivariate ablation results
-
-### 6. Survival Analysis
+### 7. Survival Analysis
 **Notebook:** `5_survival_analysis.ipynb`
 
-Generates **Kaplan–Meier survival curves** for the best-trained models:
-- Splits patients into **high-risk** and **low-risk** groups based on model predictions
-- Compares survival trajectories between the two groups
-- Also plots KM curves stratified by individual clinical features (age, gender, smoking, diabetes, hypertension, angiography results, thyroid status, etc.)
-
-Figures are stored in `figures/kaplan_meier_comparision/`.
+- **Kaplan-Meier estimator** — computes survival functions for all patients and for high-risk vs. low-risk groups stratified by the ML model
+- **Cox Proportional Hazards model** — univariate and multivariate analysis to assess the statistical significance and impact of each variable
+- Compares ML-based risk stratification with traditional statistical methods
 
 ---
 
-## Models Used
+## Models
 
-| Model | Abbreviation | Hyperparameter Search Space |
-|-------|-------------|---------------------------|
-| **Logistic Regression** | `lr` | Penalty type, solver, regularization strength (`C`), `max_iter` |
-| **Support Vector Classifier** | `svc` | Kernel type, `C`, `gamma`, `degree` |
-| **k-Nearest Neighbors** | `knn` | `n_neighbors`, weight function, algorithm, `leaf_size` |
-| **Random Forest** | `rf` | `n_estimators`, criterion, `min_samples_split/leaf`, `max_features` |
-| **AdaBoost** | `adaboost` | `n_estimators`, `learning_rate` |
-| **Neural Network (MLP)** | `nn` | `hidden_layer_sizes`, solver, `learning_rate`, `alpha`, `max_iter` |
-| **Gradient Boosting** | `gb` | `learning_rate`, `n_estimators`, `max_depth`, `subsample` |
-| **XGBoost** | `xgb` | Booster type, `eta`, `gamma`, `max_depth`, regularization, `scale_pos_weight` |
+| Model | Abbreviation |
+|-------|-------------|
+| Logistic Regression | `lr` |
+| Support Vector Classifier | `svc` |
+| K-Nearest Neighbors | `knn` |
+| Random Forest | `rf` |
+| Adaptive Boosting | `adaboost` |
+| Multilayer Perceptron (Neural Network) | `nn` |
+| Gradient Boosting | `gb` |
+| XGBoost | `xgb` |
+
+Each model is trained:
+1. **Without sampling** — on the original imbalanced data
+2. **With SMOTE** — synthetic oversampling
+3. **With Borderline-SMOTE** — focused oversampling
+4. **With SVM-SMOTE** — SVM-guided oversampling
 
 ---
 
@@ -168,43 +170,29 @@ Figures are stored in `figures/kaplan_meier_comparision/`.
 
 ```
 .
-├── 1_data_process.ipynb          # Data cleaning & feature subset creation
-├── 2_classifiers.ipynb           # Base classifier training & evaluation
-├── 3.1_data_sampling.ipynb       # Oversampling with SMOTE variants
-├── 3.2_find_best_ensemble.ipynb  # Search for optimal ensemble combinations
-├── 3_ensemble_ablations.ipynb    # Ensemble calibration & analysis
-├── 4_feature_cluster.ipynb       # Feature correlation, clustering & ablation
-├── 5_survival_analysis.ipynb     # Kaplan-Meier survival analysis
+├── 1_data_process.ipynb           # Data cleaning & feature set creation
+├── 2_classifiers.ipynb            # Base classifier training
+├── 3.1_data_sampling.ipynb        # Oversampling with SMOTE variants
+├── 3.2_find_best_ensemble.ipynb   # Optimal ensemble search
+├── 3_ensemble_ablations.ipynb     # Calibration & ablation analysis
+├── 4_feature_cluster.ipynb        # Feature correlation & clustering
+├── 5_survival_analysis.ipynb      # Kaplan-Meier & Cox regression
 │
-├── train.py                      # Training pipeline (RandomizedSearchCV + evaluation)
-├── ensemble.py                   # Ensemble building, averaging, best-combination search
-├── utils.py                      # Preprocessing (StandardScaler), resampling utilities, DebuggablePipeLine
-├── hyperparameters.py            # Hyperparameter search spaces for all models
+├── train.py                       # Training pipeline (RandomizedSearchCV)
+├── ensemble.py                    # Ensemble building & evaluation
+├── utils.py                       # Preprocessing & sampler utilities
+├── hyperparameters.py             # Hyperparameter search spaces
 │
 ├── data/
-│   ├── raw/                      # Raw Excel data files
-│   ├── 18features/               # Train/valid/test splits (18 features)
-│   ├── 23features/               # 23 features (with lipids, no thyroid)
-│   ├── 27features/               # 27 features (with thyroid, no lipids)
-│   └── 32features/               # 32 features (all)
+│   ├── raw/                       # Raw Excel sources
+│   ├── 18features/                # 17-parameter indicator (cardiovascular)
+│   ├── 23features/                # 22-parameter variant (+lipids)
+│   ├── 27features/                # 26-parameter indicator (+thyroid)
+│   └── 32features/                # 31-parameter variant (all features)
 │
-├── models/                       # Serialized .joblib model files
-│   ├── 18features/
-│   ├── 23features/
-│   ├── 27features/
-│   └── 32features/
-│
-├── models_output/                # Training logs & evaluation reports (.txt)
-│   ├── 18features/
-│   ├── 23features/
-│   ├── 27features/
-│   └── 32features/
-│
-├── figures/                      # Generated plots & visualizations
-│   ├── 18features/               # Calibration plots
-│   ├── 27features/               # Calibration + cluster plots
-│   └── kaplan_meier_comparision/ # Kaplan-Meier survival curves
-│
+├── models/                        # Serialized .joblib files
+├── models_output/                 # Training logs (.txt)
+├── figures/                       # Calibration & survival plots
 └── README.md
 ```
 
@@ -214,55 +202,36 @@ Figures are stored in `figures/kaplan_meier_comparision/`.
 
 ### Prerequisites
 
-```
-Python 3.8+
-pandas, numpy, scipy, matplotlib, scikit-learn
-imbalanced-learn
-xgboost
-joblib
-openpyxl (for Excel files)
-lifelines (for survival analysis)
-```
-
-Install with:
-
 ```bash
 pip install pandas numpy scipy matplotlib scikit-learn imbalanced-learn xgboost joblib openpyxl lifelines
 ```
 
-### Execution order (recommended)
+### Execution order
 
 ```bash
-# 1. Data preprocessing
 jupyter notebook 1_data_process.ipynb
-
-# 2. Train base classifiers
 jupyter notebook 2_classifiers.ipynb
-
-# 3. Retrain with oversampling
 jupyter notebook 3.1_data_sampling.ipynb
-
-# 4. Find best ensembles
 jupyter notebook 3.2_find_best_ensemble.ipynb
-
-# 5. Ensemble calibration & ablation
 jupyter notebook 3_ensemble_ablations.ipynb
-
-# 6. Feature clustering analysis
 jupyter notebook 4_feature_cluster.ipynb
-
-# 7. Survival analysis
 jupyter notebook 5_survival_analysis.ipynb
 ```
-
-Each notebook is self-contained and reads/writes from the `data/`, `models/`, `models_output/`, and `figures/` directories.
 
 ---
 
 ## Results Summary
 
-- **Best single classifier** varies by feature subset and sampling strategy; XGBoost and Gradient Boosting consistently rank among the top.
-- **Ensembles of 3–4 diverse models** outperform any single classifier, particularly when combining tree-based models (RF, GB, XGB) with a linear model (LR) or neural network.
-- **Oversampling with SVM-SMOTE** tends to produce the best-calibrated models (lowest Brier score).
-- **Thyroid panel features** (27-feature set) contribute meaningful predictive power in ablation studies.
-- **Kaplan–Meier curves** confirm that the model's high-risk group has significantly lower survival probability, validating the clinical utility of the predictions.
+- **Single best model** varies by feature set, but tree-based models (GB, XGB, RF) consistently rank among the top.
+- **Ensembles of 3–4 diverse models** outperform single classifiers, especially combinations of tree-based + linear models.
+- **SVM-SMOTE oversampling** tends to produce the best-calibrated models (lowest Brier score).
+- **Thyroid panel features** (26-parameter indicator) contribute meaningful predictive value in ablation studies.
+- **Kaplan-Meier survival curves** confirm that the model's high-risk group has significantly lower survival probability, validating the clinical utility of the ML-based stratification.
+
+---
+
+## References
+
+[2] *Original cardiovascular risk indicator paper* (cited in the thesis).
+
+Full details on methodology, clinical background, and extended results are available in the thesis document.
